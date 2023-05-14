@@ -10,7 +10,7 @@
 */
 
 /*
- *   Include only file
+ *   Include only when ABSPATH is defined 
  */
 if (!defined('ABSPATH')) {
   die('Do not open this file directly.');
@@ -18,7 +18,13 @@ if (!defined('ABSPATH')) {
 
 
 /*
- *  Requiring cmb2 plugin init file
+ *  Require the helper functions file
+ */
+require_once( dirname(__FILE__) . '/includes/helpers.php' );
+
+
+/*
+ *  Require cmb2 plugin init file
  */
 require_once( dirname(dirname(__FILE__)) . '/cmb2/init.php' );
 
@@ -62,17 +68,19 @@ function smd_taxonomy_meta_box() {
     ) );
 }
 
+
 /*
- *  Enqueuing the plugin script
+ *  Enqueuing the plugin scripts
  */
 add_action( 'admin_enqueue_scripts', 'smd_enqueue_scripts' );
 function smd_enqueue_scripts() {
-   wp_enqueue_style( 'same-media', plugin_dir_url( __FILE__ ) . 'style.css', array( ), '1.0' );
-   wp_enqueue_script( 'same-media', plugin_dir_url( __FILE__ ) . 'script.js', array( 'media-editor' ), '1.0', true );
+   wp_enqueue_style( 'same-media', plugin_dir_url( __FILE__ ) . 'assets/style.css', array( ), '1.0' );
+   wp_enqueue_script( 'same-media', plugin_dir_url( __FILE__ ) . 'assets/script.js', array( 'media-editor' ), '1.0', true );
    wp_localize_script( 'same-media', 'smd_helper_object',
       array( 
          'siteUrl' => site_url(),
       )
    );
 }
+
 
