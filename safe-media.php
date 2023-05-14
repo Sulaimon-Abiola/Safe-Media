@@ -84,3 +84,50 @@ function smd_enqueue_scripts() {
 }
 
 
+/*
+ *  Hook in to the delete attachment hook 
+ *  To prevent image deletion 
+ *  Based on the scenarios given in the test
+ */
+add_action( 'delete_attachment', 'prevent_image_deletion', 10, 1 );
+function prevent_image_deletion( $attachment_id ) {
+   // Check if attachment is an image
+   $attachment = get_post( $attachment_id );
+   if ( ! $attachment || ! wp_attachment_is_image( $attachment ) ) {
+      return;
+   }
+
+   $attached_objects =  get_attached_objects($attachment_id);
+
+   if(empty($attached_objects)) return;
+
+   if(!empty($attached_objects['featured'])) 
+      wp_send_json(
+         array(
+            'success'   => false, 
+            'data'      =>    __(' This image is being used as a featured image for the following posts, try removing it first: ') . $attached_objects['featured']
+         ),
+         403
+      );
+
+
+   if(!empty($attached_objects['content'])) 
+      wp_send_json(
+         array(
+            'success'   =>    false, 
+            'data'      =>    __('This image is being used inside the following posts contents, try removing it first: ') . $attached_objects['content']
+         ),
+         403
+      );
+     
+
+   if(!empty($attached_objects['term'])) 
+      wp_send_json(
+         array(
+            'success'   =>    false, 
+            'data'      =>    __('This image is being used as a featured image for the following terms, try removing it first: ') . $attached_objects['term']
+         ),
+         403
+      );
+}
+
