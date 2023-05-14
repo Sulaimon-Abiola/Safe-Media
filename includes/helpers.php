@@ -67,13 +67,12 @@ function get_attached_objects( $attachment_id ) {
   
    // check if image is being used in a taxonomy term
    $terms_with_image = get_terms(array(
-      'post_type'        => 'post',
       'taxonomy' => 'category',
       'meta_query' => array(
             array(
-               'key' => 'smd_taxonomy_image',
-               'value' => $attachment_id,
-               'compare' => 'LIKE',
+               'key'       =>    'smd_taxonomy_image_id',
+               'value'     =>    $attachment_id,
+               'compare'   =>    'LIKE',
             ),
       ),
    ));
