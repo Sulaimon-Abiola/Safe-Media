@@ -8,3 +8,15 @@
   Author URI: https://www.abiola.com/
   Text Domain: safe-media
 */
+
+/*
+ *   Include only file
+ */
+if (!defined('ABSPATH')) {
+  die('Do not open this file directly.');
+}
+
+/*
+ *  Requiring cmb2 plugin init file
+ */
+require_once( dirname(dirname(__FILE__)) . '/cmb2/init.php' );
