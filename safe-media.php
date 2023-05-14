@@ -34,7 +34,7 @@ function smd_taxonomy_meta_box() {
  
     $cmb_term = new_cmb2_box( array(
         'id'               => $prefix . 'edit',
-        'title'            => __( 'My Taxonomy', 'cmb2' ),
+        'title'            => __( 'Safe Media Taxonomy', 'cmb2' ),
         'object_types'     => array( 'term' ),
         'taxonomies'       => array( 'category' ),
         'context'          => 'side',
@@ -62,4 +62,17 @@ function smd_taxonomy_meta_box() {
     ) );
 }
 
+/*
+ *  Enqueuing the plugin script
+ */
+add_action( 'admin_enqueue_scripts', 'smd_enqueue_scripts' );
+function smd_enqueue_scripts() {
+   wp_enqueue_style( 'same-media', plugin_dir_url( __FILE__ ) . 'style.css', array( ), '1.0' );
+   wp_enqueue_script( 'same-media', plugin_dir_url( __FILE__ ) . 'script.js', array( 'media-editor' ), '1.0', true );
+   wp_localize_script( 'same-media', 'smd_helper_object',
+      array( 
+         'siteUrl' => site_url(),
+      )
+   );
+}
 
