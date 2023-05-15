@@ -180,3 +180,42 @@ function smd_delete_attachment( $request ) {
 
    return wp_send_json(array( 'message' => 'Media item deleted successfully' ));
 }
+
+
+/*
+ *  Add custom column to the media table list view
+ */
+add_filter('manage_media_columns', 'smd_media_column');
+function smd_media_column($columns) {
+    $new_columns = array(
+        'linked_objects' => __( 'Linked objects', 'text-domain' ),
+    );
+
+    // Add the new column before the "Comments" column
+    $columns = array_slice( $columns, 0, 5, true ) + $new_columns + array_slice( $columns, 2, null, true );
+    return $columns;
+}
+
+
+/*
+ *  Populate custom column in media list view
+ */
+add_action('manage_media_custom_column', 'populate_smd_media_column', 10, 2);
+function populate_smd_media_column($column_name, $id) {
+    if ($column_name == 'linked_objects') {
+
+        $attached_objects = get_attached_objects($id);
+
+        if(empty($attached_objects)) return;
+
+        $linked_objects = '';
+
+        foreach($attached_objects as $key => $value) {
+            $linked_objects .= $value.', ';
+        }
+
+        $linked_objects = rtrim($linked_objects, ', ');
+
+        echo $linked_objects;
+    }
+}
