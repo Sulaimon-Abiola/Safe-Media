@@ -74,13 +74,14 @@ function smd_taxonomy_meta_box() {
  */
 add_action( 'admin_enqueue_scripts', 'smd_enqueue_scripts' );
 function smd_enqueue_scripts() {
-   wp_enqueue_style( 'same-media', plugin_dir_url( __FILE__ ) . 'assets/style.css', array( ), '1.0' );
-   wp_enqueue_script( 'same-media', plugin_dir_url( __FILE__ ) . 'assets/script.js', array( 'media-editor' ), '1.0', true );
-   wp_localize_script( 'same-media', 'smd_helper_object',
-      array( 
-         'siteUrl' => site_url(),
-      )
-   );
+    wp_enqueue_style( 'same-media', plugin_dir_url( __FILE__ ) . 'assets/style.css', array( ), '1.0' );
+    wp_enqueue_script( 'same-media', plugin_dir_url( __FILE__ ) . 'assets/script.js', array( 'media-editor' ), '1.0', true );
+    wp_localize_script( 'same-media', 'smd_helper_object',
+        array( 
+            'siteUrl'           =>  site_url(),
+            'currentScreen'     =>  get_current_screen()
+        )
+    );
 }
 
 
@@ -131,3 +132,44 @@ function prevent_image_deletion( $attachment_id ) {
       );
 }
 
+
+/*
+ *  Register custom attachement rest api endpoints
+ */
+add_action( 'rest_api_init',  'smd_attachments_rest_api');
+function smd_attachments_rest_api () {
+   register_rest_route( 'assignment/v1', '/attachments/(?P<id>\d+)', array(
+         'methods' => 'GET',
+         'callback' => 'smd_get_attachment',
+      ) 
+   );
+
+   register_rest_route( 'assignment/v1', '/attachments/(?P<id>\d+)', array(
+         'methods' => 'DELETE',
+         'callback' => 'smd_delete_attachment',
+      ) 
+   );
+}
+
+function smd_get_attachment( $request ) {
+   $media_id = (int) $request->get_param( 'id' );
+   $media_item = wp_prepare_attachment_for_js( $media_id );
+
+   return [
+      'id'                 =>    $media_item['id'], 
+      'date'               =>    $media_item['date'], 
+      'slug'               =>    $media_item['name'], 
+      'type'               =>    $media_item['type'], 
+      'link'               =>    $media_item['link'], 
+      'alt'                =>    $media_item['alt'], 
+      'attachedObjects'    =>    get_attached_objects($media_id), 
+   ];
+}
+
+function smd_delete_attachment( $request ) {
+   $media_id = (int) $request->get_param( 'id' );
+
+   wp_delete_attachment( $media_id, true );   
+
+   return array( 'message' => 'Media item deleted successfully' );
+}

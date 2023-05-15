@@ -93,3 +93,13 @@ function get_attached_objects( $attachment_id ) {
 
    return $attached;
 }
+
+// function get_current_screen() {
+// 	global $current_screen;
+
+// 	if ( ! isset( $current_screen ) ) {
+// 		return null;
+// 	}
+
+// 	return $current_screen;
+// }
