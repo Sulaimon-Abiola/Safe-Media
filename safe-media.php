@@ -155,6 +155,8 @@ function smd_get_attachment( $request ) {
    $media_id = (int) $request->get_param( 'id' );
    $media_item = wp_prepare_attachment_for_js( $media_id );
 
+   if(!$media_item) return wp_send_json(array('message' => 'Media not found'), 404);
+
    return [
       'id'                 =>    $media_item['id'], 
       'date'               =>    $media_item['date'], 
@@ -169,7 +171,12 @@ function smd_get_attachment( $request ) {
 function smd_delete_attachment( $request ) {
    $media_id = (int) $request->get_param( 'id' );
 
+    $attachment = get_post( $media_id );
+    if ( ! $attachment || ! wp_attachment_is_image( $attachment ) ) {
+        return wp_send_json(array('message' => 'Media not found'), 404);
+    }
+
    wp_delete_attachment( $media_id, true );   
 
-   return array( 'message' => 'Media item deleted successfully' );
+   return wp_send_json(array( 'message' => 'Media item deleted successfully' ));
 }
